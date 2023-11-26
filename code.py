@@ -1,5 +1,7 @@
 import time
 import analogio
+import gc
+#import storage
 import board
 import digitalio
 import pwmio
@@ -10,6 +12,8 @@ from adafruit_hid.keycode import Keycode as K
 from adafruit_hid.mouse import Mouse
 from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode as C
+
+#storage.disable_usb_drive() # disable usb drive
 
 FN = "FN"
 
@@ -44,7 +48,7 @@ def set_light(percent):
     light_pwm.duty_cycle = int((100 - percent) * 65535 / 100)
     
     
-set_light(light)
+set_light(light) # set screen brightness
 
 
 class Timer(object):
@@ -135,7 +139,7 @@ def setup_pin(pin, direction, pull = None):
     return io
 
 
-led = setup_pin(board.GP25, digitalio.Direction.OUTPUT)
+led = setup_pin(board.GP25, digitalio.Direction.OUTPUT) # breathing light for status checking
 
 
 class CustomKeyBoard(object):
@@ -165,7 +169,7 @@ class CustomKeyBoard(object):
         [K.Z, K.X, K.C, K.V, K.B, K.N, K.M, K.COMMA, K.PERIOD, K.FORWARD_SLASH],
         [K.ESCAPE, K.QUOTE, K.MINUS, K.EQUALS, K.SPACE, K.ENTER, K.LEFT_BRACKET, K.RIGHT_BRACKET, K.BACKSLASH, (K.BACKSPACE, K.PRINT_SCREEN)],
         [(K.ONE, K.F1), (K.TWO, K.F2), (K.THREE, K.F3), (K.FOUR, K.F4), (K.FIVE, K.F5), (K.SIX, K.F6), (K.SEVEN, K.DELETE), (K.EIGHT, K.CAPS_LOCK), (K.NINE, K.HOME), (K.ZERO, K.END)],
-        [FN, K.TAB, K.LEFT_CONTROL, K.ALT, K.GRAVE_ACCENT, K.UP_ARROW, K.DOWN_ARROW, (K.LEFT_ARROW, K.PAGE_UP), (K.RIGHT_ARROW, K.PAGE_DOWN), K.RIGHT_SHIFT],
+        [FN, K.TAB, K.LEFT_CONTROL, K.ALT, K.RIGHT_SHIFT, K.GRAVE_ACCENT, K.UP_ARROW, K.DOWN_ARROW, (K.LEFT_ARROW, K.PAGE_UP), (K.RIGHT_ARROW, K.PAGE_DOWN)],
         #[K.LEFT_SHIFT, (K.F1, K.F7), (K.F2, K.F8), (K.F3, K.F9), (K.F4, K.F10), (K.F5, K.F11), (K.F6, K.F12), (K.HOME, K.END), (K.CAPS_LOCK, K.DELETE), K.RIGHT_SHIFT], K.PAGE_UP, K.PAGE_DOWN
         #[FN, K.WINDOWS ,K.TAB, K.LEFT_CONTROL, K.ALT, K.GRAVE_ACCENT, K.UP_ARROW, K.DOWN_ARROW, K.LEFT_ARROW, K.RIGHT_ARROW],
         # [K.LEFT_SHIFT, K.TAB, K.LEFT_CONTROL, K.ALT, K.GRAVE_ACCENT, K.UP_ARROW, K.DOWN_ARROW, (K.LEFT_ARROW, K.PAGE_UP), (K.RIGHT_ARROW, K.PAGE_DOWN), K.RIGHT_SHIFT],
@@ -300,6 +304,7 @@ class CustomKeyBoard(object):
                 cls.release.clear()
                 mouse.release_all()
                 keyboard.release_all()
+                time.sleep(1)
                 mouse = Mouse(usb_hid.devices)
                 keyboard = Keyboard(usb_hid.devices)
                 print(e)
@@ -307,26 +312,30 @@ class CustomKeyBoard(object):
 
 # @timed_function
 def main(): # 25ms
-    try:
-        t = supervisor.ticks_ms()
-        CustomKeyBoard.scan()
-        Timer.add()
-        tt = supervisor.ticks_ms() - t
-        sleep_time = 25 - tt
-        if sleep_time > 0:
-            time.sleep(sleep_time / 1000)
-    except Exception as e:
-        print(e)
+    t = supervisor.ticks_ms()
+    CustomKeyBoard.scan()
+    Timer.add()
+    tt = supervisor.ticks_ms() - t
+    sleep_time = 25 - tt
+    if sleep_time > 0:
+        time.sleep(sleep_time / 1000)
 
 
 led.value = True
 led_n = 0
 while True: # 40Hz
-    main()
-    led_n += 1
-    if led_n > 20:
-        led_n = 0
-        led.value = not led.value
+    try:
+        main()
+        led_n += 1
+        if led_n > 20:
+            led_n = 0
+            led.value = not led.value
+            #print(float(100 - (gc.mem_free() * 100 / (264 * 1024))))
+            gc.collect()
+    except Exception as e:
+        gc.collect()
 
 mouse.release_all()
 keyboard.release_all()
+
+
