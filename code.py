@@ -6,6 +6,15 @@ import board
 import digitalio
 import pwmio
 import usb_hid
+microcontroller = None
+try:
+    import microcontroller
+except:
+    print("no microcontroller module support")
+if microcontroller:
+    microcontroller.cpu.frequency = 200000000
+    print("freq: %s mhz" % (microcontroller.cpu.frequency / 1000000))
+
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
 from adafruit_hid.keycode import Keycode as K
