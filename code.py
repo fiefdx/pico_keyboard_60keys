@@ -311,11 +311,17 @@ class CustomKeyBoard(object):
                 # keyboard.release_all()
             except Exception as e:
                 cls.release.clear()
-                mouse.release_all()
-                keyboard.release_all()
-                time.sleep(1)
-                mouse = Mouse(usb_hid.devices)
-                keyboard = Keyboard(usb_hid.devices)
+                try:
+                    mouse.release_all()
+                    keyboard.release_all()
+                except Exception as e:
+                    print("release_all keys error: ", e)
+                try:
+                    time.sleep(1)
+                    mouse = Mouse(usb_hid.devices)
+                    keyboard = Keyboard(usb_hid.devices)
+                except Exception as e:
+                    print("reinit mouse & keyboard error: ", e)
                 print(e)
 
 
