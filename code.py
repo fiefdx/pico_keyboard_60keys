@@ -12,7 +12,7 @@ try:
 except:
     print("no microcontroller module support")
 if microcontroller:
-    microcontroller.cpu.frequency = 200000000
+    microcontroller.cpu.frequency = 100000000
     print("freq: %s mhz" % (microcontroller.cpu.frequency / 1000000))
 
 from adafruit_hid.keyboard import Keyboard
@@ -350,7 +350,4 @@ while True: # 40Hz
     except Exception as e:
         gc.collect()
 
-mouse.release_all()
-keyboard.release_all()
-
-
+microcontroller.reset() # reboot
