@@ -203,6 +203,14 @@ class CustomKeyBoard(object):
     n = 0
 
     @classmethod
+    def press_keys(cls, keys = []):
+        global keyboard
+        cls.buttons = []
+        keyboard.press(*keys)
+        keyboard.release(*keys)
+        cls.release.clear()
+
+    @classmethod
     # @timed_function
     def scan(cls):
         global light
@@ -304,6 +312,38 @@ class CustomKeyBoard(object):
                 elif K.J in cls.buttons: # mouse wheel down key
                     mouse.move(wheel = -3)
                     cls.buttons.remove(K.J)
+                elif K.SPACE in cls.buttons: # text mode vlc play/pause
+                    cls.press_keys([K.P, K.A, K.U, K.S, K.E, K.ENTER])
+                elif K.Z in cls.buttons: # text mode vlc stop
+                    cls.press_keys([K.S, K.T, K.O, K.P, K.ENTER])
+                elif K.X in cls.buttons: # text mode vlc prev
+                    cls.press_keys([K.P, K.R, K.E, K.V, K.ENTER])
+                elif K.C in cls.buttons: # text mode vlc next
+                    cls.press_keys([K.N, K.E, K.X, K.T, K.ENTER])
+                elif K.B in cls.buttons: # text mode vlc voldown 2
+                    cls.press_keys([K.V, K.O, K.L, K.D])
+                    cls.press_keys([K.O, K.W, K.N, K.SPACE, K.TWO, K.ENTER])
+                elif K.N in cls.buttons: # text mode vlc volup 2
+                    cls.press_keys([K.V, K.O, K.L, K.U, K.P])
+                    cls.press_keys([K.SPACE, K.TWO, K.ENTER])
+                elif K.M in cls.buttons: # text mode vlc backward 20 seconds
+                    cls.press_keys([K.S, K.E])
+                    cls.press_keys([K.E, K.K, K.SPACE])
+                    cls.press_keys([K.MINUS, K.TWO, K.ZERO, K.ENTER])
+                elif K.COMMA in cls.buttons: # text mode vlc forward 20 seconds
+                    cls.press_keys([K.S, K.E])
+                    cls.press_keys([K.E, K.K, K.SPACE])
+                    cls.press_keys([K.RIGHT_SHIFT, K.EQUALS])
+                    cls.press_keys([K.TWO, K.ZERO, K.ENTER])
+                elif K.PERIOD in cls.buttons: # text mode vlc backward 5 seconds
+                    cls.press_keys([K.S, K.E])
+                    cls.press_keys([K.E, K.K, K.SPACE])
+                    cls.press_keys([K.MINUS, K.FIVE, K.ENTER])
+                elif K.FORWARD_SLASH in cls.buttons: # text mode vlc forward 5 seconds
+                    cls.press_keys([K.S, K.E])
+                    cls.press_keys([K.E, K.K, K.SPACE])
+                    cls.press_keys([K.RIGHT_SHIFT, K.EQUALS])
+                    cls.press_keys([K.FIVE, K.ENTER])
             try:
                 keyboard.press(*cls.buttons)
                 keyboard.release(*cls.release)
