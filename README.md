@@ -6,7 +6,7 @@
 
 In the code.py file, you can find this 'keys' definition as below, change it as you want,
 the composite key definition like (K.ONE, K.F1), click key => K.ONE will be the key value,
-and, click Fn + key => K.F1 will be the key value.s
+and, click Fn + key => K.F1 will be the key value.
 ```python
 keys = [
     [K.Q, K.W, K.E, K.R, K.T, K.Y, K.U, K.I, K.O, K.P],
